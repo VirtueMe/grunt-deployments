@@ -14,7 +14,6 @@ module.exports = function(grunt) {
 
 
 
-
     /**
      * DB PUSH
      * pushes local database to remote database
@@ -89,7 +88,7 @@ module.exports = function(grunt) {
         grunt.log.subhead("Pulling database from '" + target_options.title + "' into Local");
 
         // Dump Target DB
-        db_dump(target_options, target_backup_paths );
+        db_dump(target_options, target_backup_paths);
 
         db_replace(target_options.url,local_options.url,target_backup_paths.file);
 
@@ -164,9 +163,14 @@ module.exports = function(grunt) {
         }
 
          // Execute cmd
-        shell.exec(cmd);
+        var result = shell.exec(cmd);
 
-        grunt.log.oklns("Database imported succesfully");
+        if (result.code === 0) {
+            grunt.log.oklns("Database imported succesfully");
+        }
+        else {
+            grunt.fail.warn(cmd + " => " + result.output);            
+        }
     }
 
 
@@ -196,7 +200,6 @@ module.exports = function(grunt) {
         if (typeof config.ssh_host === "undefined") { // it's a local connection
             grunt.log.writeln("Creating DUMP of local database");
             cmd = tpl_mysqldump;
-
         } else { // it's a remote connection
             var tpl_ssh = grunt.template.process(tpls.ssh, {
                 data: {
@@ -205,16 +208,22 @@ module.exports = function(grunt) {
             });
             grunt.log.writeln("Creating DUMP of remote database");
 
-            cmd = tpl_ssh + " \\ " + tpl_mysqldump;
+            cmd = tpl_ssh + " " + tpl_mysqldump;
         }
 
         // Capture output...
-        var output = shell.exec(cmd, {silent: true}).output;
+        var result = shell.exec(cmd, {silent: true});
 
+        if (result.code === 0) {
+            grunt.file.write( output_paths.file, result.output );
+
+
+            grunt.log.oklns("Database DUMP succesfully exported to: " + output_paths.file);
+        }
+        else {
+            grunt.fail.warn(cmd + " => " + result.output);
+        }
         // Write output to file using native Grunt methods
-        grunt.file.write( output_paths.file, output );
-
-        grunt.log.oklns("Database DUMP succesfully exported to: " + output_paths.file);
 
     }
 
@@ -231,8 +240,15 @@ module.exports = function(grunt) {
 
         grunt.log.writeln("Replacing '" + search + "' with '" + replace + "' in the database.");
          // Execute cmd
-        shell.exec(cmd);
-        grunt.log.oklns("Database references succesfully updated.");
+        var result = shell.exec(cmd);
+
+        if (result.code === 0) {
+            grunt.log.oklns("Database references succesfully updated.");
+        }
+        else {
+            grunt.fail.warn(result.output);
+        }
+        
     }
 
 
@@ -247,7 +263,7 @@ module.exports = function(grunt) {
 
         backup_path: "<%= backups_dir %>/<%= env %>/<%= date %>/<%= time %>",
 
-        search_replace: "sed -i '' 's#<%= search %>#<%= replace %>#g' <%= path %>",
+        search_replace: "sed -i 's#<%= search %>#<%= replace %>#g' <%= path %>",
 
         mysqldump: "mysqldump -h <%= host %> -u<%= user %> -p<%= pass %> <%= database %>",
 
@@ -255,12 +271,4 @@ module.exports = function(grunt) {
 
         ssh: "ssh <%= host %>",
     };
-
-
-
 };
-
-
-
-
-
