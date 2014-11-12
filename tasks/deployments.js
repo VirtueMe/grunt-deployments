@@ -231,7 +231,7 @@ module.exports = function(grunt) {
     function db_replace(search,replace,output_file) {
         grunt.log.writeln("Replacing '" + search + "' with '" + replace + "' in the database.");
          // Execute cmd
-        var result = shell.sed('-i', search, replace, path);
+        var result = shell.sed('-i', search, replace, output_file);
 
         if (result.code === 0) {
             grunt.log.oklns("Database references succesfully updated.");
