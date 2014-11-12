@@ -229,18 +229,9 @@ module.exports = function(grunt) {
 
 
     function db_replace(search,replace,output_file) {
-
-        var cmd = grunt.template.process(tpls.search_replace, {
-            data: {
-                search: search,
-                replace: replace,
-                path: output_file
-            }
-        });
-
         grunt.log.writeln("Replacing '" + search + "' with '" + replace + "' in the database.");
          // Execute cmd
-        var result = shell.exec(cmd);
+        var result = shell.sed('-i', search, replace, path);
 
         if (result.code === 0) {
             grunt.log.oklns("Database references succesfully updated.");
@@ -263,7 +254,7 @@ module.exports = function(grunt) {
 
         backup_path: "<%= backups_dir %>/<%= env %>/<%= date %>/<%= time %>",
 
-        search_replace: "sed -i'' -e 's#<%= search %>#<%= replace %>#g' <%= path %>",
+        search_replace: "sed -i '' -e 's#<%= search %>#<%= replace %>#g' <%= path %>",
 
         mysqldump: "mysqldump -h <%= host %> -u<%= user %> -p<%= pass %> <%= database %>",
 
