@@ -233,13 +233,8 @@ module.exports = function(grunt) {
          // Execute cmd
         var result = shell.sed('-i', search, replace, output_file);
 
-        if (result.code === 0) {
-            grunt.log.oklns("Database references succesfully updated.");
-        }
-        else {
-            grunt.fail.warn(result.output);
-        }
         
+        grunt.log.oklns("Database references succesfully updated.");
     }
 
 
@@ -253,8 +248,6 @@ module.exports = function(grunt) {
     var tpls = {
 
         backup_path: "<%= backups_dir %>/<%= env %>/<%= date %>/<%= time %>",
-
-        search_replace: "sed -i '' -e 's#<%= search %>#<%= replace %>#g' <%= path %>",
 
         mysqldump: "mysqldump -h <%= host %> -u<%= user %> -p<%= pass %> <%= database %>",
 
