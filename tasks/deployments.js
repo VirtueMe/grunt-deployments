@@ -9,6 +9,7 @@
 'use strict';
 
 var shell = require('shelljs');
+var _ = require('lodash');
 
 module.exports = function(grunt) {
 
@@ -83,6 +84,13 @@ module.exports = function(grunt) {
         // Generate required backup directories and paths
         var local_backup_paths  = generate_backup_paths("local", task_options);
         var target_backup_paths = generate_backup_paths(target, task_options);
+
+        // merge table not to dump
+        target_options.excludeTables = target_options.excludeTables || [];
+        target_options.excludeTables.concat(task_options.excludeTables || []);
+
+        local_options.excludeTables = local_options.excludeTables || [];
+        local_options.excludeTables.concat(local_options.excludeTables || []);
 
         // Start execution
         grunt.log.subhead("Pulling database from '" + target_options.title + "' into Local");
@@ -183,6 +191,8 @@ module.exports = function(grunt) {
         var cmd;
 
         grunt.file.mkdir(output_paths.dir);
+
+
 
 
         // 2) Compile MYSQL cmd via Lo-Dash template string
