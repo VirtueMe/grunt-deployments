@@ -87,11 +87,12 @@ module.exports = function(grunt) {
 
         // merge table not to dump
         target_options.excludeTables = target_options.excludeTables || [];
-        target_options.excludeTables.concat(task_options.excludeTables || []);
+        target_options.excludeTables = target_options.excludeTables.concat(task_options.excludeTables || []);
+
 
         local_options.excludeTables = local_options.excludeTables || [];
-        local_options.excludeTables.concat(local_options.excludeTables || []);
-
+        local_options.excludeTables = local_options.excludeTables.concat(local_options.excludeTables || []);
+        
         // Start execution
         grunt.log.subhead("Pulling database from '" + target_options.title + "' into Local");
 
