@@ -192,7 +192,7 @@ module.exports = function(grunt) {
 
         excludeTables = _.map(config.excludeTables, function (table) {
             return "--ignore-table=" + config.database + "." + table;
-        }
+        });
 
         grunt.file.mkdir(output_paths.dir);
 
