@@ -188,7 +188,11 @@ module.exports = function(grunt) {
      */
     function db_dump(config, output_paths) {
 
-        var cmd;
+        var cmd, excludeTables;
+
+        excludeTables = _.map(config.excludeTables, function (table) {
+            return "--ignore-table=" + config.database + "." + table;
+        }
 
         grunt.file.mkdir(output_paths.dir);
 
@@ -201,6 +205,7 @@ module.exports = function(grunt) {
                 user: config.user,
                 pass: config.pass,
                 database: config.database,
+                excludeTables: config.database.join(" "),
                 host: config.host
             }
         });
@@ -259,7 +264,7 @@ module.exports = function(grunt) {
 
         backup_path: "<%= backups_dir %>/<%= env %>/<%= date %>/<%= time %>",
 
-        mysqldump: "mysqldump -h <%= host %> -u<%= user %> -p<%= pass %> <%= database %>",
+        mysqldump: "mysqldump -h <%= host %> -u<%= user %> -p<%= pass %> <%= excludeTables %> <%= database %>",
 
         mysql: "mysql -h <%= host %> -u <%= user %> -p<%= pass %> <%= database %>",
 
