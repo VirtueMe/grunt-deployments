@@ -205,7 +205,7 @@ module.exports = function(grunt) {
                 user: config.user,
                 pass: config.pass,
                 database: config.database,
-                excludeTables: config.database.join(" "),
+                excludeTables: excludeTables.join(" "),
                 host: config.host
             }
         });
