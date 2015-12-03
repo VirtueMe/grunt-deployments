@@ -47,7 +47,7 @@ module.exports = function(grunt) {
         db_dump(local_options, local_backup_paths);
 
         // Search and Replace database refs
-        db_replace( local_options.url, target_options.url, local_backup_paths.file );
+        db_replace_url( local_options.url, target_options.url, local_backup_paths.file );
 
         // Dump target DB
         db_dump(target_options, target_backup_paths);
@@ -92,14 +92,14 @@ module.exports = function(grunt) {
 
         local_options.excludeTables = local_options.excludeTables || [];
         local_options.excludeTables = local_options.excludeTables.concat(local_options.excludeTables || []);
-        
+
         // Start execution
         grunt.log.subhead("Pulling database from '" + target_options.title + "' into Local");
 
         // Dump Target DB
         db_dump(target_options, target_backup_paths);
 
-        db_replace(target_options.url,local_options.url,target_backup_paths.file);
+        db_replace_url(target_options.url, local_options.url, target_backup_paths.file);
 
         // Backup Local DB
         db_dump(local_options, local_backup_paths);
@@ -110,6 +110,17 @@ module.exports = function(grunt) {
         grunt.log.subhead("Operations completed");
 
     });
+
+    function db_replace_url (oldurl, newurl, file) {
+      if (Array.isArray(oldurl)) {
+        oldurl.forEach(function (url, index) {
+          db_replace( url, newurl[index], file );
+        });
+      }
+      else {
+          db_replace( oldurl, newurl, file );
+      }
+    }
 
 
 
@@ -178,7 +189,7 @@ module.exports = function(grunt) {
             grunt.log.oklns("Database imported succesfully");
         }
         else {
-            grunt.fail.warn(cmd + " => " + result.output);            
+            grunt.fail.warn(cmd + " => " + result.output);
         }
     }
 
@@ -249,7 +260,7 @@ module.exports = function(grunt) {
          // Execute cmd
         var result = shell.sed('-i', new RegExp(search, 'g'), replace, output_file);
 
-        
+
         grunt.log.oklns("Database references succesfully updated.");
     }
 
